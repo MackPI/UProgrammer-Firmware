@@ -1,0 +1,14 @@
+eclipse.preferences.version=1
+environment/project/0.563118633.1787779438/CWD/delimiter=\:
+environment/project/0.563118633.1787779438/CWD/operation=replace
+environment/project/0.563118633.1787779438/CWD/value=/home/esp8266/esp_iot_sdk_v1.3.0/ld
+environment/project/0.563118633.1787779438/PWD/delimiter=\:
+environment/project/0.563118633.1787779438/PWD/operation=replace
+environment/project/0.563118633.1787779438/PWD/value=/home/esp8266/esp_iot_sdk_v1.3.0/app
+environment/project/0.563118633.1787779438/append=true
+environment/project/0.563118633.1787779438/appendContributed=false
+environment/project/0.563118633/PWD/delimiter=\:
+environment/project/0.563118633/PWD/operation=replace
+environment/project/0.563118633/PWD/value=/home/esp8266/esp_iot_sdk_v1.3.0/app
+environment/project/0.563118633/append=true
+environment/project/0.563118633/appendContributed=true
