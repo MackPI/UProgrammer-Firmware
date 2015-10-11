@@ -13,8 +13,9 @@
 #ifndef SIMPLE_SERIAL_H_
 #define SIMPLE_SERIAL_H_
 
-
-
-
+void serial_init(void);
+LOCAL void ICACHE_FLASH_ATTR ///////
+uart_recvTask(os_event_t *);
+void display_config_menu(void);
 
 #endif /* SIMPLE_SERIAL_H_ */
