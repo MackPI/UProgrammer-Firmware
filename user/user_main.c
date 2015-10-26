@@ -13,6 +13,8 @@
 //#include "at_custom.h"
 #include "user_interface.h"
 #include "wifi.h"
+#include "driver/spi_overlap.h"
+#include "gpio.h"
 
 os_timer_t ptimer;
 struct station_config wifi_config;
@@ -28,7 +30,9 @@ void user_state(void)
 	case 1: //Display Menu
 		display_config_menu();
 		system_state = 2;
+//		GPIO_OUTPUT_SET(15, 1);
 		break;
+
 	default: // done for now
 		break;
 	}
@@ -46,4 +50,8 @@ void user_init(void)
 	os_timer_setfn(&ptimer,user_state,NULL);
 	os_timer_arm(&ptimer,1000,1);
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U,FUNC_GPIO15);
+	GPIO_OUTPUT_SET(15, 0);
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
+	GPIO_OUTPUT_SET(12, 1);
 }

@@ -18,6 +18,7 @@
 #include "os_type.h"
 #include "simple_serial.h"
 #include "user_interface.h"
+#include "gpio.h"
 
 extern struct station_config wifi_config;
 extern char connection_status[64];
@@ -40,7 +41,9 @@ void display_config_menu(void){
     uart0_sendStr("     Choose");
     uart0_sendStr("\n\r   S - Set SSID to connect");
     uart0_sendStr("\n\r   P - Set Password");
-    uart0_sendStr("\n\r   C - Initiate connection\n\r");
+    uart0_sendStr("\n\r   C - Initiate connection");
+    uart0_sendStr("\n\r   V - Step To next voltage value");
+    uart0_sendStr("\n\r   I - IO Test GPIO12\n\r");
 }
 
 void simple_config_ui(char recvd){
@@ -76,6 +79,35 @@ void simple_config_ui(char recvd){
 			}
 		    menu_state = IDLE;
 		    string_index = 0; // start at the beginning of the string
+		    break;
+		case 'v':
+		case 'V':
+			GPIO_OUTPUT_SET(15, 0);
+			os_delay_us(1);
+			GPIO_OUTPUT_SET(15, 1);
+			menu_state = IDLE;
+			system_state = 1;//			display_config_menu();
+		    break;
+		case 'i':
+		case 'I': // simple test of gpio output with microsecond timing.
+			GPIO_OUTPUT_SET(12, 0);
+			os_delay_us(20);
+			GPIO_OUTPUT_SET(12, 1);
+			os_delay_us(20);
+			GPIO_OUTPUT_SET(12, 0);
+			os_delay_us(20);
+			GPIO_OUTPUT_SET(12, 1);
+			os_delay_us(20);
+			GPIO_OUTPUT_SET(12, 0);
+			os_delay_us(20);
+			GPIO_OUTPUT_SET(12, 1);
+			os_delay_us(20);
+			GPIO_OUTPUT_SET(12, 0);
+			os_delay_us(20);
+			GPIO_OUTPUT_SET(12, 1);
+			os_delay_us(20);
+			menu_state = IDLE;
+			system_state = 1;//			display_config_menu();
 		    break;
 		default:
 		    uart0_sendStr("Unknown \n\r");
