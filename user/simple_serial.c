@@ -19,6 +19,7 @@
 #include "simple_serial.h"
 #include "user_interface.h"
 #include "gpio.h"
+#include "pwm.h"
 
 extern struct station_config wifi_config;
 extern char connection_status[64];
@@ -42,8 +43,10 @@ void display_config_menu(void){
     uart0_sendStr("\n\r   S - Set SSID to connect");
     uart0_sendStr("\n\r   P - Set Password");
     uart0_sendStr("\n\r   C - Initiate connection");
-    uart0_sendStr("\n\r   V - Step To next voltage value");
-    uart0_sendStr("\n\r   I - IO Test GPIO12\n\r");
+    uart0_sendStr("\n\r   I - IO Test GPIO12");
+    uart0_sendStr("\n\r   R - Read ADC Must be between 0 and 1 Volt");
+    uart0_sendStr("\n\r   T - Toggle between 25 and 50 % duty cycle\n\r");
+
 }
 
 void simple_config_ui(char recvd){
@@ -80,34 +83,36 @@ void simple_config_ui(char recvd){
 		    menu_state = IDLE;
 		    string_index = 0; // start at the beginning of the string
 		    break;
-		case 'v':
-		case 'V':
-			GPIO_OUTPUT_SET(15, 0);
-			os_delay_us(1);
-			GPIO_OUTPUT_SET(15, 1);
+		case 'r':
+		case 'R':
 			menu_state = IDLE;
-			system_state = 1;//			display_config_menu();
+			system_state = 2;//			display_config_menu();
 		    break;
 		case 'i':
 		case 'I': // simple test of gpio output with microsecond timing.
-			GPIO_OUTPUT_SET(12, 0);
-			os_delay_us(20);
-			GPIO_OUTPUT_SET(12, 1);
-			os_delay_us(20);
-			GPIO_OUTPUT_SET(12, 0);
-			os_delay_us(20);
-			GPIO_OUTPUT_SET(12, 1);
-			os_delay_us(20);
-			GPIO_OUTPUT_SET(12, 0);
-			os_delay_us(20);
-			GPIO_OUTPUT_SET(12, 1);
-			os_delay_us(20);
-			GPIO_OUTPUT_SET(12, 0);
-			os_delay_us(20);
-			GPIO_OUTPUT_SET(12, 1);
-			os_delay_us(20);
+//			GPIO_OUTPUT_SET(12, 0);
+//			os_delay_us(20);
+//			GPIO_OUTPUT_SET(12, 1);
+//			os_delay_us(20);
+//			GPIO_OUTPUT_SET(12, 0);
+//			os_delay_us(20);
+//			GPIO_OUTPUT_SET(12, 1);
+//			os_delay_us(20);
+//			GPIO_OUTPUT_SET(12, 0);
+//			os_delay_us(20);
+//			GPIO_OUTPUT_SET(12, 1);
+//			os_delay_us(20);
+//			GPIO_OUTPUT_SET(12, 0);
+//			os_delay_us(20);
+//			GPIO_OUTPUT_SET(12, 1);
+//			os_delay_us(20);
 			menu_state = IDLE;
 			system_state = 1;//			display_config_menu();
+		    break;
+		case 't':
+		case 'T':
+			menu_state = IDLE;
+			system_state = 15;//			display_config_menu();
 		    break;
 		default:
 		    uart0_sendStr("Unknown \n\r");

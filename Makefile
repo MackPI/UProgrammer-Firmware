@@ -23,6 +23,8 @@ GEN_BINS= eagle.app.v6.bin
 SPECIAL_MKTARGETS=$(APP_MKTARGETS)
 SUBDIRS=    \
 	user
+SUBDIRS +=    \
+	driver
 ifdef AT_OPEN_SRC
 SUBDIRS +=    \
 	at
