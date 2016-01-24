@@ -10,69 +10,41 @@
 *******************************************************************************/
 
 #include "osapi.h"
-//#include "at_custom.h"
 #include "user_interface.h"
 #include "wifi.h"
-#include "driver/spi_overlap.h"
+//#include "driver/spi_overlap.h"
 #include "gpio.h"
 #include "pwm.h"
 #include "eagle_soc.h"
 #include "driver/sigma_delta.h"
-
-uint32 duty;
-os_timer_t ptimer;
-struct station_config wifi_config;
-char connection_status[64] = "Disconnected";
-int system_state;
-uint32 io_info[][3] = {{PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12,12}};
-unsigned char duty_adjust = 0;
-void user_state(void)
-{
-	char outBuf[32] = "";
-	switch(system_state){
-	case 0: // initializing
-		system_state = 1;
-		break;
-	case 1: //Display Menu
-		display_config_menu();
-		system_state = 15;
-		break;
-	case 2: //Display Menu
-		display_config_menu();
-		system_state = 15;
-		os_sprintf(outBuf,"ADC = %d", system_adc_read());
-	    uart0_sendStr(outBuf);
-		break;
-
-	default: // done for now
-		set_sigma_delta_duty(duty_adjust);
-		duty_adjust += 0x20;
-		break;
-	}
-}
-
+#include "driver/gpio16.h"
 void user_rf_pre_init(void)
 {
 }
 
 void user_init(void)
 {
-	duty = 500;
-	system_state = 0;
+    system_update_cpu_freq(80); //standard clock :)
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,FUNC_GPIO13);
+	GPIO_OUTPUT_SET(13, 1); // Disable Voltage Boost circuit
+
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO4_U,FUNC_GPIO4);
+//    GPIO_OUTPUT_SET(4, 1);
+
 	serial_init();
-	os_timer_disarm(&ptimer);
-	os_timer_setfn(&ptimer,user_state,NULL);
-	os_timer_arm(&ptimer,1000,1);
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
+
+
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U,FUNC_GPIO2);
-	GPIO_OUTPUT_SET(2, 1);
-//	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
-//	GPIO_OUTPUT_SET(12, 1);
-//	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
-//	GPIO_OUTPUT_SET(12, 0);
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U,FUNC_GPIO5);
+
+/* having problems every time I try to add GPIO16
+ * Moved voltage boost enable to GPIO13 for further testing
+ */
+	gpio16_output_set(1); // Disable voltage boost circuit
+	gpio16_output_conf();
+
+	GPIO_OUTPUT_SET(5, 0); //Set High to GND VPP
+	GPIO_OUTPUT_SET(2, 1); //Set High to output VPP
 	config_sigma_delta();
-//	set_sigma_target(128);
-//	set_sigma_prescale(0);
-//	pwm_init(1000,&duty,1,io_info);
-//	pwm_start();
 }

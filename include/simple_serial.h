@@ -15,7 +15,8 @@
 
 void serial_init(void);
 LOCAL void ICACHE_FLASH_ATTR ///////
-uart_recvTask(os_event_t *);
+task_handler(os_event_t *);
+LOCAL void uart0_rx_intr_handler(void *para);
 void display_config_menu(void);
 
 #endif /* SIMPLE_SERIAL_H_ */
