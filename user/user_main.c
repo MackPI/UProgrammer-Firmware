@@ -18,13 +18,17 @@
 #include "eagle_soc.h"
 #include "driver/sigma_delta.h"
 #include "driver/gpio16.h"
+//#include "driver/spi_overlap.h"
 void user_rf_pre_init(void)
 {
 }
 
 void user_init(void)
 {
-    system_update_cpu_freq(80); //standard clock :)
+//	hspi_overlap_init();
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15); // GPIO15 = HSPICS
+	GPIO_OUTPUT_SET(15, 1); // Disable SPI RAM
+	system_update_cpu_freq(80); //standard clock :)
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,FUNC_GPIO13);
 	GPIO_OUTPUT_SET(13, 1); // Disable Voltage Boost circuit
 
@@ -47,4 +51,8 @@ void user_init(void)
 	GPIO_OUTPUT_SET(5, 0); //Set High to GND VPP
 	GPIO_OUTPUT_SET(2, 1); //Set High to output VPP
 	config_sigma_delta();
+
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, 2); // GPIO15 = HSPICS
+//	GPIO_OUTPUT_SET(15, 1); // Disable SPI RAM
+	hspi_overlap_init();
 }
