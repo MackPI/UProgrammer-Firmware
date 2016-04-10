@@ -51,6 +51,7 @@ void display_config_menu(void){
     uart0_sendStr("\n\r   # - Set duty cycle in multiple of 10 %");
     uart0_sendStr("\n\r   + - Increase ΣΔ Prescaler");
     uart0_sendStr("\n\r   - - Decrease ΣΔ Prescaler");
+    uart0_sendStr("\n\r   T - Toggle GPIOs 12,13,14");
     uart0_sendStr("\n\r");
 
 }
@@ -95,6 +96,11 @@ void simple_config_ui(char recvd){
 		case 'I': // simple test of gpio output with microsecond timing.
 			menu_state = IDLE;
 		    system_os_post(USER_TASK_PRIO_0,1,0); // Display menu
+		    break;
+		case 't':
+		case 'T': // simple test of gpio output with microsecond timing.
+			menu_state = IDLE;
+		    system_os_post(USER_TASK_PRIO_0,2,0); // toggle outputs
 		    break;
 		case 'b':
 		case 'B':
@@ -173,6 +179,9 @@ void serial_init(void)
     /*this is a example to process uart data from task,please change the priority to fit your application task if exists*/
     system_os_task(task_handler, USER_TASK_PRIO_0, taskQueue, taskQueueLen);  //demo with a task to process the uart data
     system_os_post(USER_TASK_PRIO_0,1,0); // Display menu
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
+//    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,FUNC_GPIO13);
+    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U,FUNC_GPIO14);
 
 
 }
@@ -180,6 +189,7 @@ void serial_init(void)
 LOCAL void ICACHE_FLASH_ATTR ///////
 task_handler(os_event_t *events)
 {
+	static bool toggle = true;
 	char outBuf[32] = "";
     if(events->sig == 0){ //serial recieve task
         uint8 fifo_len = (READ_PERI_REG(UART_STATUS(UART0))>>UART_RXFIFO_CNT_S)&UART_RXFIFO_CNT;
@@ -202,6 +212,18 @@ task_handler(os_event_t *events)
  		os_sprintf(outBuf,"ΣΔ duty cycle = %d / Prescaler = %d", get_sigma_delta_duty(),get_sigma_delta_prescaler());
 		uart0_sendStr(outBuf);
 		}
+    }
+    if(events->sig == 2){ //Toggle Outputs
+    	if (toggle){
+    		GPIO_OUTPUT_SET(12,1);
+//    		GPIO_OUTPUT_SET(13,1);
+    		GPIO_OUTPUT_SET(14,0);
+    	}else{
+    		GPIO_OUTPUT_SET(12,0);
+//    		GPIO_OUTPUT_SET(13,0);
+    		GPIO_OUTPUT_SET(14,1);
+    	}
+    	toggle = !toggle;
     }
 }
 
