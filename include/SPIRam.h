@@ -10,7 +10,8 @@
 
 void initSpiRam(); // Set up SPI and Overlap Mode
 void disableSpiRam(); // Shut down Overlap Mode
-void writeRam(char*, int length);
+//void writeRam(char*, int length);
+void writeRam();
 void readRam(char*, int Length);
 
 

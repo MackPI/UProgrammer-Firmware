@@ -61,6 +61,7 @@ void simple_config_ui(char recvd){
 	static char password[64] = ""; // Access point password
 	static int string_index = 0;
 	static int menu_state = IDLE;
+	char teststr[15];
 	switch (menu_state){
 	case IDLE:
 		switch (recvd) {
@@ -110,7 +111,15 @@ void simple_config_ui(char recvd){
 //		    gpio16_output_set(0); // Enable voltage boost circuit
 		    break;
 		case '0':
+			writeRam("Hello World",11);
+			break;
 		case '1':
+			os_memset(teststr,' ',14);
+			teststr[14]=0;
+		    uart0_sendStr(teststr);
+			readRam(teststr,11);
+		    uart0_sendStr(teststr);
+			break;
 		case '2':
 		case '3':
 		case '4':
@@ -179,9 +188,9 @@ void serial_init(void)
     /*this is a example to process uart data from task,please change the priority to fit your application task if exists*/
     system_os_task(task_handler, USER_TASK_PRIO_0, taskQueue, taskQueueLen);  //demo with a task to process the uart data
     system_os_post(USER_TASK_PRIO_0,1,0); // Display menu
-    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
+//    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
 //    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,FUNC_GPIO13);
-    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U,FUNC_GPIO14);
+//    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U,FUNC_GPIO14);
 
 
 }
