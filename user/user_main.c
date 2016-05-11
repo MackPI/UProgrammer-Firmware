@@ -39,11 +39,12 @@ void user_init(void)
 //	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U,HSPI_PIN); // GPIO14
 //	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,HSPI_PIN); // GPIO12
 //	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,HSPI_PIN);// GPIO13
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U,HSPI_PIN);// GPIO15
+//	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U,HSPI_PIN);// GPIO15
 //	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
 //	spi_master_init(1);
 //	spi_mast_byte_write(1,0x55); // Write byte out HSPI
 //	spi_mast_byte_write(1,0xAA); // Write byte out HSPI
+	writeRam();
 	readRam();
 //	hspi_overlap_deinit();
 	serial_init();
@@ -68,4 +69,5 @@ void user_init(void)
 //	GPIO_OUTPUT_SET(15, 1); // Disable SPI RAM
 //	hspi_overlap_init();
 //	initSpiRam();
+//	readRam();
 }

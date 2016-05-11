@@ -195,7 +195,7 @@ void serial_init(void)
 
 }
 
-LOCAL void ICACHE_FLASH_ATTR ///////
+LOCAL void// ICACHE_FLASH_ATTR ///////
 task_handler(os_event_t *events)
 {
 	static bool toggle = true;
@@ -221,6 +221,8 @@ task_handler(os_event_t *events)
  		os_sprintf(outBuf,"ΣΔ duty cycle = %d / Prescaler = %d", get_sigma_delta_duty(),get_sigma_delta_prescaler());
 		uart0_sendStr(outBuf);
 		}
+//		readRam();
+
     }
     if(events->sig == 2){ //Toggle Outputs
     	if (toggle){
@@ -245,7 +247,7 @@ task_handler(os_event_t *events)
  * Returns      : NONE
  * Provided in Espressif IOT SDK
 *******************************************************************************/
-LOCAL void ICACHE_FLASH_ATTR
+LOCAL void // ICACHE_FLASH_ATTR
 uart_config(uint8 uart_no)
 {
     if (uart_no == UART1){
