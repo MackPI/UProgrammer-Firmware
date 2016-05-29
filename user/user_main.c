@@ -26,6 +26,7 @@ void user_rf_pre_init(void)
 #define HSPI_PIN 2
 void user_init(void)
 {
+//	char byte_data[];
 //	hspi_overlap_init();
 //	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15); // GPIO15 = HSPICS
 //	GPIO_OUTPUT_SET(15, 1); // Disable SPI RAM
@@ -41,12 +42,7 @@ void user_init(void)
 //	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,HSPI_PIN);// GPIO13
 //	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U,HSPI_PIN);// GPIO15
 //	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
-//	spi_master_init(1);
-//	spi_mast_byte_write(1,0x55); // Write byte out HSPI
-//	spi_mast_byte_write(1,0xAA); // Write byte out HSPI
 	writeRam();
-	readRam();
-//	hspi_overlap_deinit();
 	serial_init();
 //	while(true); // infinite loop
 	wifi_set_event_handler_cb(wifi_handle_event_cb);
@@ -63,7 +59,7 @@ void user_init(void)
 
 //	GPIO_OUTPUT_SET(5, 0); //Set High to GND VPP
 //	GPIO_OUTPUT_SET(2, 1); //Set High to output VPP
-//	config_sigma_delta();
+	config_sigma_delta();
 
 //	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, 2); // GPIO15 = HSPICS
 //	GPIO_OUTPUT_SET(15, 1); // Disable SPI RAM

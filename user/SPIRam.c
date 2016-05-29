@@ -64,16 +64,11 @@ void writeRam(){
 	SET_PERI_REG_MASK(SPI_CMD(HSPI), SPI_USR);// Tell hardware to do it.
 	while(READ_PERI_REG(SPI_CMD(HSPI))&SPI_USR);
 
-//	WRITE_PERI_REG(SPI_USER2(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_ADDR(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_USER1(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_USER(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_CLOCK(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_PIN(SPI),stack[--stack_index]);
 }
 
 void //__attribute__((section(".text")))
 readRam(char data[], int length){
+	uint32 chunk;
 //	ETS_INTR_LOCK();
 //	uint32 stack[7];
 //	uint8 stack_index= 0;
@@ -105,7 +100,7 @@ readRam(char data[], int length){
 	WRITE_PERI_REG(SPI_ADDR(HSPI), (uint32) 0x000000<<(32-24)); //write 24-bit address
 
 //	stack[stack_index++] = READ_PERI_REG(SPI_USER2(SPI));
-	WRITE_PERI_REG(SPI_USER2(HSPI), (((7&SPI_USR_COMMAND_BITLEN)<<SPI_USR_COMMAND_BITLEN_S) | 0x03)); // Write Command
+	WRITE_PERI_REG(SPI_USER2(HSPI), (((7&SPI_USR_COMMAND_BITLEN)<<SPI_USR_COMMAND_BITLEN_S) | 0x03)); // Read Command
 
 	WRITE_PERI_REG(SPI_W0(HSPI),0x00000000); //"Hell"
 	WRITE_PERI_REG(SPI_W1(HSPI),0x00000000); //"o Wo"
@@ -114,13 +109,25 @@ readRam(char data[], int length){
 	SET_PERI_REG_MASK(SPI_CMD(HSPI), SPI_USR);// Tell hardware to do it.
 	while(READ_PERI_REG(SPI_CMD(HSPI))&SPI_USR); // wait till it's finished
 
-//	WRITE_PERI_REG(SPI_USER2(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_ADDR(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_USER1(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_USER(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_CLOCK(SPI),stack[--stack_index]);
-//	WRITE_PERI_REG(SPI_PIN(SPI),stack[--stack_index]);
-//	ETS_INTR_UNLOCK();
+	chunk = READ_PERI_REG(SPI_W0(HSPI)); //"Hell"
+	data[0]= (chunk >>24) & 0xff;
+	data[1]= (chunk >>16) & 0xff;
+	data[2]= (chunk >>8) & 0xff;
+	data[3]= (chunk >>0) & 0xff;
+
+	chunk = READ_PERI_REG(SPI_W1(HSPI)); //"o Wo"
+	data[4]= (chunk >>24) & 0xff;
+	data[5]= (chunk >>16) & 0xff;
+	data[6]= (chunk >>8) & 0xff;
+	data[7]= (chunk >>0) & 0xff;
+
+	chunk = READ_PERI_REG(SPI_W2(HSPI)); //"rld",NULL
+	data[8]= (chunk >>24) & 0xff;
+	data[9]= (chunk >>16) & 0xff;
+	data[10]= (chunk >>8) & 0xff;
+	data[11]= (chunk >>0) & 0xff;
+
+
 
 }
 
