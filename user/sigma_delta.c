@@ -9,11 +9,12 @@
 //void config_sigma_delta(unsigned char pin, unsigned char target, unsigned char prescale){
 void config_sigma_delta(){
     GPIO_REG_WRITE(GPIO_SIGMA_DELTA, 0x10000); // Enable Sigma Delta (1)
-    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
+//    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
 //    GPIO_OUTPUT_SET(12, 0);
 //    GPIO_REG_WRITE(GPIO_PIN12,1); // connect GPIO 12 to Sigmadelta Channel
     PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO4_U,FUNC_GPIO4);
     GPIO_OUTPUT_SET(4, 1);
+    GPIO_REG_WRITE(GPIO_PIN4,1); // connect GPIO 4 to Sigmadelta Channel
 //    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,FUNC_GPIO13);
 //    GPIO_OUTPUT_SET(13, 1);
 //    GPIO_REG_WRITE(GPIO_PIN13,1); // connect GPIO 4 to Sigmadelta Channel

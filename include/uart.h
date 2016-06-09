@@ -30,6 +30,8 @@
 #define UART_HW_RTS   0   //set 1: enable uart hw flow control RTS, PIN MTDO, FOR UART0
 #define UART_HW_CTS  0    //set1: enable uart hw flow contrl CTS , PIN MTCK, FOR UART0
 
+#define uart_recvTaskPrio        0
+#define uart_recvTaskQueueLen    10
 
 
 

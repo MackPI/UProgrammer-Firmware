@@ -7,6 +7,7 @@
  *
  * Modification history:
  *     2015/10/1, v1.0 create this file.
+ *     2016/6/9, V1.0a moved to NONOS SDK V1.5.4
 *******************************************************************************/
 
 #include "osapi.h"

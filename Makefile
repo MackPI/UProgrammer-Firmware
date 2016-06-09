@@ -81,10 +81,10 @@ LINKFLAGS_eagle.app.v6 = \
 	-lsmartconfig	\
 	$(DEP_LIBS_eagle.app.v6)					
 
-ifndef AT_OPEN_SRC
-LINKFLAGS_eagle.app.v6 +=    \
-	-lat
-endif
+#ifndef AT_OPEN_SRC
+#LINKFLAGS_eagle.app.v6 +=    \
+#	-lat
+#endif
 
 LINKFLAGS_eagle.app.v6 +=    \
 	-Wl,--end-group
