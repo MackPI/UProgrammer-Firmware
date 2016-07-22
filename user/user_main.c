@@ -41,7 +41,7 @@ void user_init(void)
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO4_U,FUNC_GPIO4); // ΣΔ pulse stream for Voltage pump
     GPIO_OUTPUT_SET(4, 1);
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO5_U,FUNC_GPIO5); //Vpp Low Drive
-    GPIO_OUTPUT_SET(5, 1); //Set High to GND VPP
+    GPIO_OUTPUT_SET(5, 0); //Set High to GND VPP
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_SD_CLK_U,FUNC_SPICLK); //GPIO6 SPI SCLK
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_SD_DATA0_U,FUNC_SPIQ); //GPIO7 SPI MISO
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_SD_DATA1_U,FUNC_SPID); //GPIO8 SPI MOSI
@@ -57,20 +57,25 @@ void user_init(void)
 		GPIO_REG_WRITE((pin_index*4)+0x60000328,0); // disconnect all pins from ΣΔ
 	}
 
-	hspi_overlap_init();
-//	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
-	writeRam();
+//	hspi_overlap_init();
+////	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
+//	writeRam();
 	serial_init();
-	wifi_set_event_handler_cb(wifi_handle_event_cb);
+//	wifi_set_event_handler_cb(wifi_handle_event_cb);
 
 
 
 /* having problems every time I try to add GPIO16
  * Moved voltage boost enable to GPIO13 for further testing
  */
-//	gpio16_output_set(1); // Disable voltage boost circuit
-//	gpio16_output_conf();
+	gpio16_output_set(1); // Disable voltage boost circuit
+//	gpio16_output_set(0); // Enable voltage boost circuit
+	gpio16_output_conf();
 
 	config_sigma_delta();
+
+	wifi_set_opmode(NULL_MODE);
+	wifi_fpm_set_sleep_type (MODEM_SLEEP_T);
+	wifi_fpm_open(); // force modem to sleep
 
 }
