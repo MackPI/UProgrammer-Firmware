@@ -27,6 +27,7 @@ void disableSpiRam(){
 void writeRam(){
 //	uint32 stack[7];
 //	uint8 stack_index= 0;
+	hspi_overlap_init();
 	while(READ_PERI_REG(SPI_CMD(HSPI))&SPI_USR);
 
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, 1);// GPIO0 -> SPICS2
@@ -63,6 +64,7 @@ void writeRam(){
 
 	SET_PERI_REG_MASK(SPI_CMD(HSPI), SPI_USR);// Tell hardware to do it.
 	while(READ_PERI_REG(SPI_CMD(HSPI))&SPI_USR);
+	hspi_overlap_deinit();
 
 }
 
@@ -72,6 +74,7 @@ readRam(char data[], int length){
 //	ETS_INTR_LOCK();
 //	uint32 stack[7];
 //	uint8 stack_index= 0;
+	hspi_overlap_init();
 	while(READ_PERI_REG(SPI_CMD(HSPI))&SPI_USR);
 
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, 1);// GPIO0 -> SPICS2
@@ -126,6 +129,7 @@ readRam(char data[], int length){
 	data[9]= (chunk >>16) & 0xff;
 	data[10]= (chunk >>8) & 0xff;
 	data[11]= (chunk >>0) & 0xff;
+	hspi_overlap_deinit();
 
 
 

@@ -86,6 +86,7 @@ void simple_config_ui(char recvd){
 				wifi_set_opmode(STATION_MODE);
 				wifi_station_set_config(&wifi_config);
 			    uart0_sendStr("Connecting... \n\r");
+			    wifi_station_connect();
 			}
 		    menu_state = IDLE;
 		    string_index = 0; // start at the beginning of the string
@@ -195,8 +196,8 @@ void serial_init(void)
 	system_set_os_print(1); // Turn on System Messages
     /*this is a example to process uart data from task,please change the priority to fit your application task if exists*/
     system_os_task(task_handler, USER_TASK_PRIO_0, taskQueue, taskQueueLen);  //demo with a task to process the uart data
-    system_os_post(USER_TASK_PRIO_0,1,0); // Display menu
-//    system_os_post(USER_TASK_PRIO_0,1,3); // Display menu and data from SPI RAM
+//    system_os_post(USER_TASK_PRIO_0,1,0); // Display menu
+    system_os_post(USER_TASK_PRIO_0,1,3); // Display menu and data from SPI RAM
 //    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDI_U,FUNC_GPIO12);
 //    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTCK_U,FUNC_GPIO13);
 //    PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U,FUNC_GPIO14);
@@ -230,11 +231,12 @@ task_handler(os_event_t *events)
  		os_sprintf(outBuf,"ΣΔ duty = %d / Pre = %d", get_sigma_delta_duty(),get_sigma_delta_prescaler());
 		uart0_sendStr(outBuf);
 		}
-//		if (events->par == 3){// display ADC reading
-//// 		os_sprintf(outBuf,"ΣΔ duty cycle = %d / Prescaler = %d", get_sigma_delta_duty(),get_sigma_delta_prescaler());
-//			readRam(outBuf,12); // read 12 bytes from beginning of ram.
-//			uart0_sendStr(outBuf); // and display them.
-//		}
+		if (events->par == 3){// display ADC reading
+// 		os_sprintf(outBuf,"ΣΔ duty cycle = %d / Prescaler = %d", get_sigma_delta_duty(),get_sigma_delta_prescaler());
+			readRam(outBuf,12); // read 12 bytes from beginning of ram.
+			outBuf[12]= 0;
+			uart0_sendStr(outBuf); // and display them.
+		}
 
     }
     if(events->sig == 2){ //Toggle Outputs

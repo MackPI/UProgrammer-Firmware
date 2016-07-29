@@ -22,9 +22,58 @@
 #define FUNC_U0RXD                      0
 
 //#include "driver/spi_overlap.h"
+
+/******************************************************************************
+ * FunctionName : user_rf_cal_sector_set
+ * Description  : SDK just reversed 4 sectors, used for rf init data and paramters.
+ *                We add this function to force users to set rf cal sector, since
+ *                we don't know which sector is free in user's application.
+ *                sector map for last several sectors : ABCCC
+ *                A : rf cal
+ *                B : rf init data
+ *                C : sdk parameters
+ * Parameters   : none
+ * Returns      : rf cal sector
+*******************************************************************************/
+uint32 ICACHE_FLASH_ATTR
+user_rf_cal_sector_set(void)
+{
+    enum flash_size_map size_map = system_get_flash_size_map();
+    uint32 rf_cal_sec = 0;
+
+    switch (size_map) {
+        case FLASH_SIZE_4M_MAP_256_256:
+            rf_cal_sec = 128 - 5;
+            break;
+
+        case FLASH_SIZE_8M_MAP_512_512:
+            rf_cal_sec = 256 - 5;
+            break;
+
+        case FLASH_SIZE_16M_MAP_512_512:
+        case FLASH_SIZE_16M_MAP_1024_1024:
+            rf_cal_sec = 512 - 5;
+            break;
+
+        case FLASH_SIZE_32M_MAP_512_512:
+        case FLASH_SIZE_32M_MAP_1024_1024:
+            rf_cal_sec = 1024 - 5;
+            break;
+
+        default:
+            rf_cal_sec = 0;
+            break;
+    }
+
+    return rf_cal_sec;
+}
+
+
 void user_rf_pre_init(void)
 {
 }
+
+// TODO Check for potential buffer Overruns with all sprintf() calls
 
 #define HSPI_PIN 2
 void user_init(void)
@@ -58,24 +107,25 @@ void user_init(void)
 	}
 
 //	hspi_overlap_init();
-////	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
-//	writeRam();
+//	CLEAR_PERI_REG_MASK(PERIPHS_IO_MUX, BIT9);
+	writeRam();
+//	hspi_overlap_deinit();
 	serial_init();
-//	wifi_set_event_handler_cb(wifi_handle_event_cb);
+	wifi_set_event_handler_cb(wifi_handle_event_cb);
 
 
 
 /* having problems every time I try to add GPIO16
  * Moved voltage boost enable to GPIO13 for further testing
  */
-	gpio16_output_set(1); // Disable voltage boost circuit
-//	gpio16_output_set(0); // Enable voltage boost circuit
+//	gpio16_output_set(1); // Disable voltage boost circuit
+	gpio16_output_set(0); // Enable voltage boost circuit
 	gpio16_output_conf();
 
 	config_sigma_delta();
 
-	wifi_set_opmode(NULL_MODE);
-	wifi_fpm_set_sleep_type (MODEM_SLEEP_T);
-	wifi_fpm_open(); // force modem to sleep
+	wifi_set_opmode(STATION_MODE);
+//	wifi_fpm_set_sleep_type (MODEM_SLEEP_T);
+//	wifi_fpm_open(); // force modem to sleep
 
 }
