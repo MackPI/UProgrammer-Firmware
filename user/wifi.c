@@ -18,6 +18,10 @@
 //#include "ets_sys.h"
 extern struct station_config wifi_config;
 extern char connection_status[64];
+void wifi_init(){
+	wifi_set_event_handler_cb(wifi_handle_event_cb);
+	wifi_set_opmode(STATION_MODE);
+}
 
 void wifi_handle_event_cb(System_Event_t *evt)
 {

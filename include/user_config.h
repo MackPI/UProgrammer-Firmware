@@ -1,12 +1,10 @@
 #ifndef __USER_CONFIG_H__
 #define __USER_CONFIG_H__
 
-//#define AT_CUSTOM_UPGRADE
+// Enable/disable voltage boost circuit
+#define VOLTAGE_BOOST_ENABLE()	gpio16_output_set(0)
+#define VOLTAGE_BOOST_DISABLE()	gpio16_output_set(1)
 
-#ifdef AT_CUSTOM_UPGRADE
-    #ifndef AT_UPGRADE_SUPPORT
-    #error "upgrade is not supported when eagle.flash.bin+eagle.irom0text.bin!!!"
-    #endif
-#endif
+void setup_io_pins(void);
 
 #endif

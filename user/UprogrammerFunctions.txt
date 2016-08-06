@@ -1,0 +1,15 @@
+This file is here to document function usage.
+
+File: user_main.c
+uint32 user_rf_cal_sector_set(void)
+prototype in: system files(I don't know which one)
+Gets flash size from system and returns first sector number of configuration data
+It is called by the system.
+
+void setup_io_pins(void)
+prototype in: user_config.h
+Initializes all IO pins to default values.
+
+File: user_config.h macro definitions
+VOLTAGE_BOOST_ENABLE()
+VOLTAGE_BOOST_DISABLE()
