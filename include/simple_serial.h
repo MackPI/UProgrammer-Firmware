@@ -13,10 +13,18 @@
 #ifndef SIMPLE_SERIAL_H_
 #define SIMPLE_SERIAL_H_
 
+#define DISPLAY_MENU() system_os_post(USER_TASK_PRIO_0,1,0)
+#define DISPLAY_MENU_W_SPI() system_os_post(USER_TASK_PRIO_0, 1, 3)
+#define DISPLAY_MENU_W_SIGMA_DELTA() system_os_post(USER_TASK_PRIO_0, 1, 2)
+#define DISPLAY_MENU_W_ADC() system_os_post(USER_TASK_PRIO_0, 1, 1)
+#define TURN_OFF_SYSTEM_MESSAGES() system_set_os_print(0)
+#define TURN_ON_SYSTEM_MESSAGES() system_set_os_print(1)
+
 void serial_init(void);
-LOCAL void ICACHE_FLASH_ATTR ///////
-task_handler(os_event_t *);
 LOCAL void uart0_rx_intr_handler(void *para);
 void display_config_menu(void);
+void receive_next(char recv);
+void get_new_ssid(char recv);
+void get_new_password(char recv);
 
 #endif /* SIMPLE_SERIAL_H_ */
