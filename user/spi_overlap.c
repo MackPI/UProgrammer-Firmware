@@ -4,7 +4,7 @@
 
 struct hspi_device_register hspi_dev_reg;
 void ICACHE_FLASH_ATTR
-hspi_overlap_init(void)
+hspiOverlapInit(void)
 {
 	//hspi overlap to spi, two spi masters on cspi
 	SET_PERI_REG_MASK(HOST_INF_SEL, reg_cspi_overlap);
@@ -16,7 +16,7 @@ hspi_overlap_init(void)
 }
 
 void ICACHE_FLASH_ATTR
-hspi_overlap_deinit(void)
+hspiOverlapDeinit(void)
 {
 	//hspi overlap to spi, two spi masters on cspi
 	CLEAR_PERI_REG_MASK(HOST_INF_SEL, reg_cspi_overlap);
@@ -28,7 +28,7 @@ hspi_overlap_deinit(void)
 }
 
 void ICACHE_FLASH_ATTR
-spi_reg_backup(uint8 spi_no, uint32* backup_mem)
+spiRegBackup(uint8 spi_no, uint32* backup_mem)
 {
 	if (spi_no > 1)
 		return; //handle invalid input number
@@ -45,7 +45,7 @@ spi_reg_backup(uint8 spi_no, uint32* backup_mem)
 }
 
 void ICACHE_FLASH_ATTR
-spi_reg_recover(uint8 spi_no, uint32* backup_mem)
+spiRegRecover(uint8 spi_no, uint32* backup_mem)
 {
 	if (spi_no > 1)
 		return; //handle invalid input number
@@ -60,7 +60,7 @@ spi_reg_recover(uint8 spi_no, uint32* backup_mem)
 }
 
 void ICACHE_FLASH_ATTR
-hspi_master_dev_init(uint8 dev_no, uint8 clk_polar, uint8 clk_div)
+hspiMasterDevInit(uint8 dev_no, uint8 clk_polar, uint8 clk_div)
 {
 	uint32 regtemp;
 	if ((dev_no > 3) || (clk_polar > 1) || (clk_div > 0x1f))
@@ -86,10 +86,10 @@ hspi_master_dev_init(uint8 dev_no, uint8 clk_polar, uint8 clk_div)
 		regtemp = READ_PERI_REG(SPI_CTRL(SPI)) & SPI_FLASH_READ_MODE_MASK;
 		CLEAR_PERI_REG_MASK(SPI_CTRL(HSPI), SPI_FLASH_READ_MODE_MASK);
 		SET_PERI_REG_MASK(SPI_CTRL(HSPI), regtemp);
-		spi_reg_backup(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
+		spiRegBackup(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
 
 		spi_master_init(HSPI);
-		spi_reg_backup(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
+		spiRegBackup(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
 
 		hspi_dev_reg.hspi_reg_backup_flag = 1;
 
@@ -133,7 +133,7 @@ hspi_master_dev_init(uint8 dev_no, uint8 clk_polar, uint8 clk_div)
 }
 
 void ICACHE_FLASH_ATTR
-hspi_dev_sel(uint8 dev_no)
+hspiDeviceSel(uint8 dev_no)
 {
 	uint32 regval;
 
@@ -156,7 +156,7 @@ hspi_dev_sel(uint8 dev_no)
 		{
 			WAIT_HSPI_IDLE();
 			DISABLE_HSPI_DEV_CS();
-			hspi_overlap_init();
+			hspiOverlapInit();
 
 			if (hspi_dev_reg.spi_io_80m)
 			{
@@ -191,8 +191,8 @@ hspi_dev_sel(uint8 dev_no)
 		{
 			WAIT_HSPI_IDLE();
 			DISABLE_HSPI_DEV_CS();
-			hspi_overlap_init();
-			spi_reg_recover(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
+			hspiOverlapInit();
+			spiRegRecover(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
 
 			if (hspi_dev_reg.spi_io_80m)
 			{
@@ -228,7 +228,7 @@ hspi_dev_sel(uint8 dev_no)
 		else if (dev_no == SPI_CS0_FLASH)
 		{
 			WAIT_HSPI_IDLE();
-			spi_reg_recover(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
+			spiRegRecover(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
 			HSPI_RISING_EDGE_SAMPLE();
 			ACTIVE_HSPI_CS0
 			;
@@ -237,7 +237,7 @@ hspi_dev_sel(uint8 dev_no)
 		{
 			WAIT_HSPI_IDLE();
 			ENABLE_HSPI_DEV_CS();
-			hspi_overlap_deinit();
+			hspiOverlapDeinit();
 			CONF_HSPI_CLK_DIV(hspi_dev_reg.hspi_dev_conf[dev_no].clk_div);
 
 			if (hspi_dev_reg.hspi_dev_conf[dev_no].clk_polar)
@@ -278,7 +278,7 @@ hspi_dev_sel(uint8 dev_no)
 		else if (dev_no == SPI_CS0_FLASH)
 		{
 			WAIT_HSPI_IDLE();
-			spi_reg_recover(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
+			spiRegRecover(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
 			HSPI_RISING_EDGE_SAMPLE();
 			ACTIVE_HSPI_CS0
 			;
@@ -287,7 +287,7 @@ hspi_dev_sel(uint8 dev_no)
 		{
 			WAIT_HSPI_IDLE();
 			ENABLE_HSPI_DEV_CS();
-			hspi_overlap_deinit();
+			hspiOverlapDeinit();
 			CONF_HSPI_CLK_DIV(hspi_dev_reg.hspi_dev_conf[dev_no].clk_div);
 
 			if (hspi_dev_reg.hspi_dev_conf[dev_no].clk_polar)
@@ -308,7 +308,7 @@ hspi_dev_sel(uint8 dev_no)
 		if ((dev_no == SPI_CS1_DEV) || (dev_no == SPI_CS2_DEV))
 		{
 			WAIT_HSPI_IDLE();
-			spi_reg_recover(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
+			spiRegRecover(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
 
 			if (hspi_dev_reg.spi_io_80m)
 			{
@@ -343,8 +343,8 @@ hspi_dev_sel(uint8 dev_no)
 		{
 			WAIT_HSPI_IDLE();
 			ENABLE_HSPI_DEV_CS();
-			hspi_overlap_deinit();
-			spi_reg_recover(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
+			hspiOverlapDeinit();
+			spiRegRecover(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
 			CONF_HSPI_CLK_DIV(hspi_dev_reg.hspi_dev_conf[dev_no].clk_div);
 
 			if (hspi_dev_reg.hspi_dev_conf[dev_no].clk_polar)
@@ -366,8 +366,8 @@ hspi_dev_sel(uint8 dev_no)
 		{
 			WAIT_HSPI_IDLE();
 			DISABLE_HSPI_DEV_CS();
-			hspi_overlap_init();
-			spi_reg_recover(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
+			hspiOverlapInit();
+			spiRegRecover(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
 
 			if (hspi_dev_reg.spi_io_80m)
 			{
@@ -402,8 +402,8 @@ hspi_dev_sel(uint8 dev_no)
 		{
 			WAIT_HSPI_IDLE();
 			DISABLE_HSPI_DEV_CS();
-			hspi_overlap_init();
-			spi_reg_recover(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
+			hspiOverlapInit();
+			spiRegRecover(HSPI, hspi_dev_reg.hspi_flash_reg_backup);
 
 			if (hspi_dev_reg.spi_io_80m)
 			{
@@ -418,8 +418,8 @@ hspi_dev_sel(uint8 dev_no)
 		{
 			WAIT_HSPI_IDLE();
 			ENABLE_HSPI_DEV_CS();
-			hspi_overlap_deinit();
-			spi_reg_recover(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
+			hspiOverlapDeinit();
+			spiRegRecover(HSPI, hspi_dev_reg.hspi_dev_reg_backup);
 			CONF_HSPI_CLK_DIV(hspi_dev_reg.hspi_dev_conf[dev_no].clk_div);
 
 			if (hspi_dev_reg.hspi_dev_conf[dev_no].clk_polar)
@@ -440,7 +440,7 @@ hspi_dev_sel(uint8 dev_no)
 }
 
 SpiFlashOpResult ICACHE_FLASH_ATTR
-hspi_overlap_read_flash_data(SpiFlashChip * spi, uint32 flash_addr,
+hspiOverlapReadFlashData(SpiFlashChip * spi, uint32 flash_addr,
 		uint32 * addr_dest, uint32 byte_length)
 {
 	uint32 temp_addr, reg_tmp;
@@ -448,7 +448,7 @@ hspi_overlap_read_flash_data(SpiFlashChip * spi, uint32 flash_addr,
 	uint8 i;
 	uint8 remain_word_num;
 
-	hspi_dev_sel(SPI_CS0_FLASH);
+	hspiDeviceSel(SPI_CS0_FLASH);
 
 	//address range check
 	if ((flash_addr + byte_length) > (spi->chip_size))
@@ -499,9 +499,9 @@ hspi_overlap_read_flash_data(SpiFlashChip * spi, uint32 flash_addr,
 }
 
 void ICACHE_FLASH_ATTR
-hspi_overlap_flash_init(void)
+hspiOverlapFlashInit(void)
 {
-	hspi_master_dev_init(SPI_CS0_FLASH, 0, 0);
+	hspiMasterDevInit(SPI_CS0_FLASH, 0, 0);
 
-	spi_flash_set_read_func(hspi_overlap_read_flash_data);
+	spi_flash_set_read_func(hspiOverlapReadFlashData);
 }

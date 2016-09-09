@@ -7,18 +7,18 @@
 void initSpiRam()
 {
 	spi_master_init(HSPI);
-	hspi_overlap_init();
+	hspiOverlapInit();
 	ENABLE_HSPI_DEV_CS();
 
 }
 void disableSpiRam()
 {
-	hspi_overlap_deinit();
+	hspiOverlapDeinit();
 
 }
 void writeRam()
 {
-	hspi_overlap_init();
+	hspiOverlapInit();
 	while (READ_PERI_REG(SPI_CMD(HSPI)) & SPI_USR)
 		;
 
@@ -62,7 +62,7 @@ void writeRam()
 	// Tell hardware to do it.
 	while (READ_PERI_REG(SPI_CMD(HSPI)) & SPI_USR)
 		;
-	hspi_overlap_deinit();
+	hspiOverlapDeinit();
 
 }
 
@@ -70,7 +70,7 @@ void //__attribute__((section(".text")))
 readRam(char data[], int length)
 {
 	uint32 chunk;
-	hspi_overlap_init();
+	hspiOverlapInit();
 	while (READ_PERI_REG(SPI_CMD(HSPI)) & SPI_USR)
 		;
 
@@ -137,7 +137,7 @@ readRam(char data[], int length)
 	data[9] = (chunk >> 16) & 0xff;
 	data[10] = (chunk >> 8) & 0xff;
 	data[11] = (chunk >> 0) & 0xff;
-	hspi_overlap_deinit();
+	hspiOverlapDeinit();
 
 }
 

@@ -214,11 +214,11 @@ spi_slave_init(uint8 spi_no, uint8 data_len)
 	ETS_SPI_INTR_ENABLE();
 }
 
-
 #include "gpio.h"
 #include "user_interface.h"
 #include "mem.h"
-static uint8 spi_data[32] = { 0 };
+static uint8 spi_data[32] =
+{ 0 };
 static uint8 idx = 0;
 static uint8 spi_flg = 0;
 #define SPI_MISO
@@ -300,5 +300,4 @@ void spi_slave_isr_handler(void *para)
 
 	}
 }
-
 

@@ -60,19 +60,19 @@ void user_init(void)
 {
 	system_update_cpu_freq(80); //standard clock :)
 
-	setup_io_pins();
+	setupIoPins();
 
 	//TODO writeRam is test code. Clean it up.
 	writeRam();
-	serial_init();
+	serialInit();
 
-	config_sigma_delta();
+	configSigmaDelta();
 
 }
 
-void setup_io_pins()
+void setupIoPins()
 {
-	uint8 pin_index;
+	uint8 pinIndex;
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO0_U, FUNC_GPIO0);
 	// Analog Switch
 	GPIO_OUTPUT_SET(0, 0);
@@ -113,11 +113,11 @@ void setup_io_pins()
 	// Set to known state
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
 	//Target data pin
-	for (pin_index = 0; pin_index < 15; pin_index++)
+	for (pinIndex = 0; pinIndex < 15; pinIndex++)
 	{
-		GPIO_REG_WRITE((pin_index*4)+0x60000328, 0);
+		GPIO_REG_WRITE((pinIndex*4)+0x60000328, 0);
 		// disconnect all pins from ΣΔ
 	}
 	VOLTAGE_BOOST_ENABLE();
-	gpio16_output_conf();
+	gpio16OutputConf();
 }

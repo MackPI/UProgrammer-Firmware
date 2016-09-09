@@ -10,7 +10,7 @@
 extern UartDevice UartDev;
 os_event_t uart_recvTaskQueue[uart_recvTaskQueueLen];
 
-LOCAL void uart0_rx_intr_handler(void *para);
+LOCAL void uart0RxIntrHandler(void *para);
 
 /******************************************************************************
  * FunctionName : uart_config
@@ -21,7 +21,7 @@ LOCAL void uart0_rx_intr_handler(void *para);
  * Returns      : NONE
  * Provided in Espressif IOT SDK
  *******************************************************************************/LOCAL void // ICACHE_FLASH_ATTR
-uart_config(uint8 uart_no)
+uartConfig(uint8 uart_no)
 {
 	if (uart_no == UART1)
 	{
@@ -30,7 +30,7 @@ uart_config(uint8 uart_no)
 	else
 	{
 		/* rcv_buff size if 0x100 */
-		ETS_UART_INTR_ATTACH(uart0_rx_intr_handler, &(UartDev.rcv_buff));
+		ETS_UART_INTR_ATTACH(uart0RxIntrHandler, &(UartDev.rcv_buff));
 		PIN_PULLUP_DIS(PERIPHS_IO_MUX_U0TXD_U);
 		PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_U0TXD);
 	}
@@ -76,8 +76,8 @@ uart_config(uint8 uart_no)
  * Parameters   : void *para - point to ETS_UART_INTR_ATTACH's arg
  * Returns      : NONE
  * Provided in Espressif IOT SDK
- *******************************************************************************/LOCAL void uart0_rx_intr_handler(
-		void *para)
+ *******************************************************************************/
+ LOCAL void uart0RxIntrHandler(void *para)
 {
 	/* uart0 and uart1 intr combine togther, when interrupt occur, see reg 0x3ff20020, bit2, bit0 represents
 	 * uart1 and uart0 respectively
@@ -101,14 +101,14 @@ uart_config(uint8 uart_no)
 	else if (UART_RXFIFO_FULL_INT_ST
 			== (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_FULL_INT_ST))
 	{
-		uart_rx_intr_disable(UART0);
+		uartRxInterruptDisable(UART0);
 		WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_FULL_INT_CLR);
-		system_os_post(USER_TASK_PRIO_0, 0, 0);
+		system_os_post(USER_TASK_PRIO_0, 0, 0); //ToDO Make this a macro
 	}
 	else if (UART_RXFIFO_TOUT_INT_ST
 			== (READ_PERI_REG(UART_INT_ST(uart_no)) & UART_RXFIFO_TOUT_INT_ST))
 	{
-		uart_rx_intr_disable(UART0);
+		uartRxInterruptDisable(UART0);
 		WRITE_PERI_REG(UART_INT_CLR(UART0), UART_RXFIFO_TOUT_INT_CLR);
 		system_os_post(USER_TASK_PRIO_0, 0, 0);
 	}
@@ -124,7 +124,7 @@ uart_config(uint8 uart_no)
 #if UART_BUFF_EN
 		tx_start_uart_buffer(UART0);
 #endif
-		//system_os_post(uart_recvTaskPrio, 1, 0);
+		//system_os_post(UART_RECV_TASK_PRIO, 1, 0);
 		WRITE_PERI_REG(UART_INT_CLR(uart_no), UART_TXFIFO_EMPTY_INT_CLR);
 
 	}
@@ -143,7 +143,7 @@ uart_config(uint8 uart_no)
  * Parameters   : uint8 TxChar - character to tx
  * Returns      : OK
  *******************************************************************************/
-STATUS uart_tx_one_char(uint8 uart, uint8 TxChar)
+STATUS uartTxOneChar(uint8 uart, uint8 TxChar)
 {
 	while (true)
 	{
@@ -166,11 +166,11 @@ STATUS uart_tx_one_char(uint8 uart, uint8 TxChar)
  * Returns      :
  *******************************************************************************/
 void ICACHE_FLASH_ATTR
-uart0_sendStr(const char *str)
+uart0SendStr(const char *str)
 {
 	while (*str)
 	{
-		uart_tx_one_char(UART0, *str++);
+		uartTxOneChar(UART0, *str++);
 	}
 }
 
@@ -182,7 +182,7 @@ uart0_sendStr(const char *str)
  * Returns      : NONE
  *******************************************************************************/
 //LOCAL void ICACHE_FLASH_ATTR ///////
-LOCAL void uart_recvTask(os_event_t *events)
+LOCAL void uartRecvTask(os_event_t *events)
 {
 	if (events->sig == 0)
 	{
@@ -197,41 +197,41 @@ LOCAL void uart_recvTask(os_event_t *events)
 		for (idx = 0; idx < fifo_len; idx++)
 		{
 			d_tmp = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
-			uart_tx_one_char(UART0, d_tmp);
+			uartTxOneChar(UART0, d_tmp);
 		}
 		WRITE_PERI_REG(UART_INT_CLR(UART0),
 				UART_RXFIFO_FULL_INT_CLR|UART_RXFIFO_TOUT_INT_CLR);
-		uart_rx_intr_enable(UART0);
+		uartRxInterruptEnable(UART0);
 #endif
 	}
 	else if (events->sig == 1)
 	{
-#if UART_BUFF_EN
-		//already move uart buffer output to uart empty interrupt
-		//tx_start_uart_buffer(UART0);
-#else
-
-#endif
+//#if UART_BUFF_EN
+//		//already move uart buffer output to uart empty interrupt
+//		//tx_start_uart_buffer(UART0);
+//#else
+//
+//#endif
 	}
 }
 
 void ICACHE_FLASH_ATTR
-uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
+uartInit(UartBautRate uart0_br, UartBautRate uart1_br)
 {
 	/*this is a example to process uart data from task,please change the priority to fit your application task if exists*/
-	system_os_task(uart_recvTask, uart_recvTaskPrio, uart_recvTaskQueue,
+	system_os_task(uartRecvTask, UART_RECV_TASK_PRIO, uart_recvTaskQueue,
 			uart_recvTaskQueueLen); //demo with a task to process the uart data
 
 	UartDev.baut_rate = uart0_br;
-	uart_config(UART0);
+	uartConfig(UART0);
 	UartDev.baut_rate = uart1_br;
-	uart_config(UART1);
+	uartConfig(UART1);
 	ETS_UART_INTR_ENABLE();
 
-#if UART_BUFF_EN
-	pTxBuffer = Uart_Buf_Init(UART_TX_BUFFER_SIZE);
-	pRxBuffer = Uart_Buf_Init(UART_RX_BUFFER_SIZE);
-#endif
+//#if UART_BUFF_EN
+//	pTxBuffer = Uart_Buf_Init(UART_TX_BUFFER_SIZE);
+//	pRxBuffer = Uart_Buf_Init(UART_RX_BUFFER_SIZE);
+//#endif
 
 	/*option 1: use default print, output from uart0 , will wait some time if fifo is full */
 	//do nothing...
@@ -242,31 +242,30 @@ uart_init(UartBautRate uart0_br, UartBautRate uart1_br)
 	/*see uart0_write_char_no_wait:you can output via a buffer or output directly */
 	/*os_printf output uart data via uart0 or uart buffer*/
 	//os_install_putc1((void *)uart0_write_char_no_wait);  //use this to print via uart0
-#if UART_SELFTEST&UART_BUFF_EN
-	os_timer_disarm(&buff_timer_t);
-	os_timer_setfn(&buff_timer_t, uart_test_rx , NULL); //a demo to process the data in uart rx buffer
-	os_timer_arm(&buff_timer_t,10,1);
-#endif
+//#if UART_SELFTEST&UART_BUFF_EN
+//	os_timer_disarm(&buff_timer_t);
+//	os_timer_setfn(&buff_timer_t, uart_test_rx , NULL); //a demo to process the data in uart rx buffer
+//	os_timer_arm(&buff_timer_t,10,1);
+//#endif
 }
 
-void uart_rx_intr_disable(uint8 uart_no)
+void uartRxInterruptDisable(uint8 uart_no)
 {
 #if 1
 	CLEAR_PERI_REG_MASK(UART_INT_ENA(uart_no),
 			UART_RXFIFO_FULL_INT_ENA|UART_RXFIFO_TOUT_INT_ENA);
-#else
-	ETS_UART_INTR_DISABLE();
+//#else
+//	ETS_UART_INTR_DISABLE();
 #endif
 }
 
-void uart_rx_intr_enable(uint8 uart_no)
+void uartRxInterruptEnable(uint8 uart_no)
 {
 #if 1
 	SET_PERI_REG_MASK(UART_INT_ENA(uart_no),
 			UART_RXFIFO_FULL_INT_ENA|UART_RXFIFO_TOUT_INT_ENA);
-#else
-	ETS_UART_INTR_ENABLE();
+//#else
+//	ETS_UART_INTR_ENABLE();
 #endif
 }
-
 

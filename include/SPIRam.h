@@ -14,6 +14,4 @@ void disableSpiRam(); // Shut down Overlap Mode
 void writeRam();
 void readRam(char*, int Length);
 
-
-
 #endif /* SPIRAM_H_ */

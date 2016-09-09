@@ -11,7 +11,7 @@
 
 //TODO clean up this code for readability
 void // ICACHE_FLASH_ATTR ///////
-task_handler(os_event_t *events)
+taskHandler(os_event_t *events)
 {
 	static bool toggle = true;
 	char outBuf[32] = "";
@@ -25,33 +25,33 @@ task_handler(os_event_t *events)
 		do
 		{
 			d_tmp = READ_PERI_REG(UART_FIFO(UART0)) & 0xFF;
-			simple_config_ui(d_tmp);
+			simpleConfigUI(d_tmp);
 		} while ((READ_PERI_REG(UART_STATUS(UART0)) >> UART_RXFIFO_CNT_S)
 				& UART_RXFIFO_CNT > 0);
 		WRITE_PERI_REG(UART_INT_CLR(UART0),
 				UART_RXFIFO_FULL_INT_CLR|UART_RXFIFO_TOUT_INT_CLR);
-		uart_rx_intr_enable(UART0);
+		uartRxInterruptEnable(UART0);
 	}
 	if (events->sig == 1)
 	{ //Menu task
-		display_config_menu();
+		displayConfigMenu();
 		if (events->par == 1)
 		{ // display ADC reading
 			os_sprintf(outBuf, "ADC = %d", system_adc_read());
-			uart0_sendStr(outBuf);
+			uart0SendStr(outBuf);
 		}
 		if (events->par == 2)
 		{ // display ADC reading
 			os_sprintf(outBuf, "ΣΔ duty = %d / Pre = %d",
-					get_sigma_delta_duty(), get_sigma_delta_prescaler());
-			uart0_sendStr(outBuf);
+					getSigmaDeltaDuty(), getSigmaDeltaPrescaler());
+			uart0SendStr(outBuf);
 		}
 		if (events->par == 3)
 		{ // display ADC reading
 // 		os_sprintf(outBuf,"ΣΔ duty cycle = %d / Prescaler = %d", get_sigma_delta_duty(),get_sigma_delta_prescaler());
 			readRam(outBuf, 12); // read 12 bytes from beginning of ram.
 			outBuf[12] = 0;
-			uart0_sendStr(outBuf); // and display them.
+			uart0SendStr(outBuf); // and display them.
 		}
 
 	}
@@ -72,6 +72,4 @@ task_handler(os_event_t *events)
 		toggle = !toggle;
 	}
 }
-
-
 

@@ -20,11 +20,11 @@
 #define TURN_OFF_SYSTEM_MESSAGES() system_set_os_print(0)
 #define TURN_ON_SYSTEM_MESSAGES() system_set_os_print(1)
 
-void serial_init(void);
+void serialInit(void);
 LOCAL void uart0_rx_intr_handler(void *para);
-void display_config_menu(void);
-void receive_next(char recv);
-void get_new_ssid(char recv);
-void get_new_password(char recv);
+void displayConfigMenu(void);
+void receiveNext(char recv);
+void getNewSSID(char recv);
+void getNewPassword(char recv);
 
 #endif /* SIMPLE_SERIAL_H_ */

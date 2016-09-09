@@ -4,29 +4,30 @@
 #include "os_type.h"
 
 //void config_sigma_delta(unsigned char pin, unsigned char target, unsigned char prescale){
-void config_sigma_delta()
+void configSigmaDelta()
 {
 	GPIO_REG_WRITE(GPIO_SIGMA_DELTA, 0x10000);
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO4_U, FUNC_GPIO4);
 	GPIO_OUTPUT_SET(4, 1);
-	GPIO_REG_WRITE(GPIO_PIN4, 1); // connect GPIO 4 to Sigmadelta Channel
+	GPIO_REG_WRITE(GPIO_PIN4, 1);
+	// connect GPIO 4 to Sigmadelta Channel
 	GPIO_REG_WRITE(GPIO_SIGMA_DELTA, 0x10100);
 
 }
 
-unsigned char get_sigma_delta_prescaler(void)
+unsigned char getSigmaDeltaPrescaler(void)
 {
 	return (unsigned char) ((GPIO_REG_READ(GPIO_SIGMA_DELTA) >> 8) & 0x0ff); // read Target prescaler
 }
-unsigned char get_sigma_delta_duty(void)
+unsigned char getSigmaDeltaDuty(void)
 {
 	return (unsigned char) (GPIO_REG_READ(GPIO_SIGMA_DELTA) & 0x0ff); // set Target duty cycle
 }
 
-void set_sigma_delta_duty(unsigned char duty)
+void setSigmaDeltaDuty(unsigned char duty)
 {
 	uint8 prescaler;
-	prescaler = get_sigma_delta_prescaler();
+	prescaler = getSigmaDeltaPrescaler();
 	if (GPIO_REG_READ(GPIO_SIGMA_DELTA) & 0x10000)
 	{ // check to see if ΣΔ is running
 		GPIO_REG_WRITE(GPIO_SIGMA_DELTA, 0);
@@ -42,10 +43,10 @@ void set_sigma_delta_duty(unsigned char duty)
 
 }
 
-void set_sigma_delta_prescaler(unsigned char prescaler)
+void setSigmaDeltaPrescaler(unsigned char prescaler)
 {
 	uint8 duty;
-	duty = get_sigma_delta_duty();
+	duty = getSigmaDeltaDuty();
 	if (GPIO_REG_READ(GPIO_SIGMA_DELTA) & 0x10000)
 	{ // check to see if ΣΔ is running
 		GPIO_REG_WRITE(GPIO_SIGMA_DELTA, 0);

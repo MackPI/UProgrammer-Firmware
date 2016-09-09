@@ -64,16 +64,16 @@ struct hspi_device_register
 	uint8 res :3;
 };
 
-void hspi_overlap_init(void);
-void hspi_overlap_deinit(void);
-void spi_reg_recover(uint8 spi_no, uint32* backup_mem);
-void spi_reg_backup(uint8 spi_no, uint32* backup_mem);
+void hspiOverlapInit(void);
+void hspiOverlapDeinit(void);
+void spiRegRecover(uint8 spi_no, uint32* backup_mem);
+void spiRegBackup(uint8 spi_no, uint32* backup_mem);
 
-void hspi_master_dev_init(uint8 dev_no, uint8 clk_polar, uint8 clk_div);
-void hspi_dev_sel(uint8 dev_no);
+void hspiMasterDevInit(uint8 dev_no, uint8 clk_polar, uint8 clk_div);
+void hspiDeviceSel(uint8 dev_no);
 
-void hspi_overlap_flash_init(void);
-SpiFlashOpResult hspi_overlap_read_flash_data(SpiFlashChip * spi,
+void hspiOverlapFlashInit(void);
+SpiFlashOpResult hspiOverlapReadFlashData(SpiFlashChip * spi,
 		uint32 flash_addr, uint32 * addr_dest, uint32 byte_length);
 
 #endif

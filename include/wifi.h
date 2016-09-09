@@ -1,7 +1,7 @@
 #ifndef WIFI_H
 #define WIFI_H
 
-void wifi_init(void);
-void wifi_handle_event_cb(System_Event_t *evt);
+void wifiInit(void);
+void wifiHandleEventCB(System_Event_t *evt);
 
 #endif //WIFI_H

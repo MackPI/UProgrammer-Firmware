@@ -3,7 +3,7 @@
 #include "driver/gpio16.h"
 
 void ICACHE_FLASH_ATTR
-gpio16_output_conf(void)
+gpio16OutputConf(void)
 {
 	WRITE_PERI_REG(PAD_XPD_DCDC_CONF,
 			(READ_PERI_REG(PAD_XPD_DCDC_CONF) & 0xffffffbc) | (uint32)0x1);
@@ -19,14 +19,14 @@ gpio16_output_conf(void)
 }
 
 void ICACHE_FLASH_ATTR
-gpio16_output_set(uint8 value)
+gpio16OutputSet(uint8 value)
 {
 	WRITE_PERI_REG(RTC_GPIO_OUT,
 			(READ_PERI_REG(RTC_GPIO_OUT) & (uint32)0xfffffffe) | (uint32)(value & 1));
 }
 
 void ICACHE_FLASH_ATTR
-gpio16_input_conf(void)
+gpio16InputConf(void)
 {
 	WRITE_PERI_REG(PAD_XPD_DCDC_CONF,
 			(READ_PERI_REG(PAD_XPD_DCDC_CONF) & 0xffffffbc) | (uint32)0x1);
@@ -42,7 +42,7 @@ gpio16_input_conf(void)
 }
 
 uint8 ICACHE_FLASH_ATTR
-gpio16_input_get(void)
+gpio16InputGet(void)
 {
 	return (uint8) (READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
 }

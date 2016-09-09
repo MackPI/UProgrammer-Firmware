@@ -11,6 +11,6 @@
 #include "user_interface.h"
 
 void ICACHE_FLASH_ATTR
-task_handler(os_event_t *);
+taskHandler(os_event_t *);
 
 #endif /* EVENTS_H_ */

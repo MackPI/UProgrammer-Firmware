@@ -8,6 +8,6 @@
 #define GPIO_PIN4			0x38
 
 //void config_sigma_delta(unsigned char pin, unsigned char target, unsigned char prescale);
-void config_sigma_delta();
+void configSigmaDelta();
 
 #endif
