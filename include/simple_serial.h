@@ -19,6 +19,8 @@
 #define DISPLAY_MENU_W_ADC() system_os_post(USER_TASK_PRIO_0, 1, 1)
 #define TURN_OFF_SYSTEM_MESSAGES() system_set_os_print(0)
 #define TURN_ON_SYSTEM_MESSAGES() system_set_os_print(1)
+#define ADC_SELECT_TARGET() GPIO_OUTPUT_SET(15, 1)
+#define ADC_SELECT_VPP() GPIO_OUTPUT_SET(15, 0)
 
 void serialInit(void);
 LOCAL void uart0_rx_intr_handler(void *para);

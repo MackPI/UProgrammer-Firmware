@@ -79,7 +79,7 @@ void setupIoPins()
 	//High= Vt Low = Vpp
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_U0TXD_U, FUNC_U0TXD);
 	// Uart0 Controlled by API
-	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO2);
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);
 	//Vpp High Drive
 	GPIO_OUTPUT_SET(2, 1);
 	//Set High to output VPP
@@ -113,6 +113,10 @@ void setupIoPins()
 	// Set to known state
 	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTMS_U, FUNC_GPIO14);
 	//Target data pin
+	PIN_FUNC_SELECT(PERIPHS_IO_MUX_MTDO_U, FUNC_GPIO15);
+	//Analog select
+	GPIO_OUTPUT_SET(15, 1);
+	//Select Vt for ADC
 	for (pinIndex = 0; pinIndex < 15; pinIndex++)
 	{
 		GPIO_REG_WRITE((pinIndex*4)+0x60000328, 0);

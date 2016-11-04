@@ -80,7 +80,6 @@ void serialInit(void)
 	TURN_OFF_SYSTEM_MESSAGES();
 	system_os_task(taskHandler, USER_TASK_PRIO_0, taskQueue, taskQueueLen);
 	DISPLAY_MENU();
-
 }
 
 void getNewSSID(char recv)
@@ -192,6 +191,18 @@ void receiveNext(char recvd)
 		setSigmaDeltaPrescaler(prescaler);
 		menuState = IDLE;
 		DISPLAY_MENU_W_SIGMA_DELTA();
+		break;
+	case '<': // select Vt
+		ADC_SELECT_TARGET();
+		//Select Vpp for ADC
+		menuState = IDLE;
+		DISPLAY_MENU_W_ADC();
+		break;
+	case '>': //Select Vpp
+		ADC_SELECT_VPP();
+		//Select Vt for ADC
+		menuState = IDLE;
+		DISPLAY_MENU_W_ADC();
 		break;
 	default:
 		DISPLAY_MENU();

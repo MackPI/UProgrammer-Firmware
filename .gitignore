@@ -24,3 +24,6 @@
 /.metadata/.plugins/org.eclipse.cdt.make.core/specs.c
 /.metadata/.plugins/org.eclipse.cdt.core/.log
 /.metadata/.lock
+/build.sh
+/restoredefaults.sh
+/upload.sh

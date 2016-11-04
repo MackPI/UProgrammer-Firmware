@@ -37,7 +37,9 @@ taskHandler(os_event_t *events)
 		displayConfigMenu();
 		if (events->par == 1)
 		{ // display ADC reading
-			os_sprintf(outBuf, "ADC = %d", system_adc_read());
+			int adc_result = system_adc_read();
+			int scaled_result = (210*adc_result)/1023;
+			os_sprintf(outBuf, "ADC = %d (%d.%d Volts)", adc_result, scaled_result/10, scaled_result%10);
 			uart0SendStr(outBuf);
 		}
 		if (events->par == 2)

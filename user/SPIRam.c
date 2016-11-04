@@ -9,7 +9,6 @@ void initSpiRam()
 	spi_master_init(HSPI);
 	hspiOverlapInit();
 	ENABLE_HSPI_DEV_CS();
-
 }
 void disableSpiRam()
 {
