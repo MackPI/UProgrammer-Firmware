@@ -61,11 +61,13 @@ void user_init(void)
 	system_update_cpu_freq(80); //standard clock :)
 
 	setupIoPins();
+	wifiInit();
 
 	//TODO writeRam is test code. Clean it up.
 	writeRam();
 	serialInit();
-
+//	wifi_set_opmode_current(STATION_MODE);
+	init_adc_timer();
 	configSigmaDelta();
 
 }

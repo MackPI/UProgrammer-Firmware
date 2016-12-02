@@ -24,11 +24,12 @@ os_event_t taskQueue[taskQueueLen];
 #define SSID 1
 #define PWD 2
 unsigned char prescaler = 1;
+unsigned char sdDuty = 0;
 static int menuState = IDLE;
 static char ssid[32] = ""; // Access point name
 static char password[64] = ""; // Access point password
 static int string_index = 0;
-
+static bool gpio16_state = false;
 void displayConfigMenu(void)
 {
 	char string[128];
@@ -49,6 +50,10 @@ void displayConfigMenu(void)
 	uart0SendStr("\n\r   + - Increase ΣΔ Prescaler");
 	uart0SendStr("\n\r   - - Decrease ΣΔ Prescaler");
 	uart0SendStr("\n\r   T - Toggle GPIOs 12,13,14");
+	uart0SendStr("\n\r   < - Connect Vt to ADC");
+	uart0SendStr("\n\r   > - Connect Vpp to ADC");
+	os_sprintf(string, "\n\rHigh Voltage is %s",(gpio16_state ? "off":"on"));
+	uart0SendStr(string);
 	uart0SendStr("\n\r");
 
 }
@@ -63,9 +68,11 @@ void simpleConfigUI(char in)
 		receiveNext(in);
 		break;
 	case SSID:
+		display_now = false;
 		getNewSSID(in);
 		break;
 	case PWD:
+		display_now = false;
 		getNewPassword(in);
 		break;
 	default:
@@ -77,9 +84,11 @@ void serialInit(void)
 {
 	// Initialize the serial port for USB serial bridge
 	uartInit(115200, 115200);
-	TURN_OFF_SYSTEM_MESSAGES();
+//	TURN_OFF_SYSTEM_MESSAGES();
+	TURN_ON_SYSTEM_MESSAGES();
 	system_os_task(taskHandler, USER_TASK_PRIO_0, taskQueue, taskQueueLen);
-	DISPLAY_MENU();
+//	DISPLAY_MENU();
+	DISPLAY_MENU_W_SPI();
 }
 
 void getNewSSID(char recv)
@@ -92,7 +101,10 @@ void getNewSSID(char recv)
 		os_memcpy(&wifi_config.ssid, ssid, 32);
 		menuState = IDLE;
 		DISPLAY_MENU();
-//		system_os_post(USER_TASK_PRIO_0, 1, 0); // Display menu
+		string_index = 0;
+		display_now = true;
+
+		//		system_os_post(USER_TASK_PRIO_0, 1, 0); // Display menu
 	}
 	if (recv == '\n')
 		string_index--;
@@ -108,6 +120,8 @@ void getNewPassword(char recv)
 		os_memcpy(&wifi_config.password, password, 64);
 		menuState = IDLE;
 		DISPLAY_MENU();
+		display_now = true;
+		string_index = 0;
 //  	system_os_post(USER_TASK_PRIO_0, 1, 0); // Display menu
 	}
 	if (recv == '\n')
@@ -159,13 +173,13 @@ void receiveNext(char recvd)
 	case 'B':
 		menuState = IDLE;
 		DISPLAY_MENU();
-		GPIO_OUTPUT_SET(13, 0);
+		gpio16_state = !gpio16_state;
 		// Enable Voltage Boost circuit
-		gpio16OutputSet(0); // Enable voltage boost circuit
+		gpio16OutputSet(gpio16_state); // Enable voltage boost circuit
 		break;
 	case '0':
-		writeRam("Hello World", 11);
-		break;
+//		writeRam("Hello World", 11);
+//		break;
 	case '1':
 	case '2':
 	case '3':
@@ -176,6 +190,20 @@ void receiveNext(char recvd)
 	case '8':
 	case '9':
 		setSigmaDeltaDuty(((uint8) recvd - 0x30) * 256 / 10);
+		sdDuty =((uint8) recvd - 0x30) * 256 / 10;
+		menuState = IDLE;
+		DISPLAY_MENU_W_SIGMA_DELTA();
+		break;
+	case '[':
+		sdDuty--;
+		setSigmaDeltaDuty(sdDuty);
+//			set_sigma_delta_prescaler((unsigned char)(get_sigma_delta_prescaler()+1));
+		menuState = IDLE;
+		DISPLAY_MENU_W_SIGMA_DELTA();
+		break;
+	case ']':
+		sdDuty++;
+		setSigmaDeltaDuty(sdDuty);
 		menuState = IDLE;
 		DISPLAY_MENU_W_SIGMA_DELTA();
 		break;
@@ -196,13 +224,15 @@ void receiveNext(char recvd)
 		ADC_SELECT_TARGET();
 		//Select Vpp for ADC
 		menuState = IDLE;
-		DISPLAY_MENU_W_ADC();
+//		DISPLAY_MENU_W_ADC();
+		DISPLAY_MENU();
 		break;
 	case '>': //Select Vpp
 		ADC_SELECT_VPP();
 		//Select Vt for ADC
 		menuState = IDLE;
-		DISPLAY_MENU_W_ADC();
+//		DISPLAY_MENU_W_ADC();
+		DISPLAY_MENU();
 		break;
 	default:
 		DISPLAY_MENU();

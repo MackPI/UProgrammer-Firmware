@@ -8,7 +8,9 @@
 #include "uart.h"
 #include "user_interface.h"
 #include "osapi.h"
+#include "simple_serial.h"
 
+extern char connection_status[64];
 //TODO clean up this code for readability
 void // ICACHE_FLASH_ATTR ///////
 taskHandler(os_event_t *events)
@@ -37,19 +39,20 @@ taskHandler(os_event_t *events)
 		displayConfigMenu();
 		if (events->par == 1)
 		{ // display ADC reading
-			int adc_result = system_adc_read();
+//			int adc_result = system_adc_read();
+			int adc_result = adcValue;
 			int scaled_result = (210*adc_result)/1023;
-			os_sprintf(outBuf, "ADC = %d (%d.%d Volts)", adc_result, scaled_result/10, scaled_result%10);
+			os_sprintf(outBuf, "ADC = %03X (%d.%d Volts)", adc_result, scaled_result/10, scaled_result%10);
 			uart0SendStr(outBuf);
 		}
 		if (events->par == 2)
-		{ // display ADC reading
+		{ // display Sigma Delts settings
 			os_sprintf(outBuf, "ΣΔ duty = %d / Pre = %d",
 					getSigmaDeltaDuty(), getSigmaDeltaPrescaler());
 			uart0SendStr(outBuf);
 		}
 		if (events->par == 3)
-		{ // display ADC reading
+		{ // display First bytes of SPI RAM
 // 		os_sprintf(outBuf,"ΣΔ duty cycle = %d / Prescaler = %d", get_sigma_delta_duty(),get_sigma_delta_prescaler());
 			readRam(outBuf, 12); // read 12 bytes from beginning of ram.
 			outBuf[12] = 0;
@@ -75,3 +78,31 @@ taskHandler(os_event_t *events)
 	}
 }
 
+
+
+void adc_read(void)
+{
+	static uint8 cycle_count = 0;
+
+	uint8 wifi_opmode;
+//	if(connection_status[0] == 'C'){
+//		wifi_opmode = wifi_get_opmode();
+//		wifi_set_opmode_current(NULL_MODE);
+		GPIO_OUTPUT_SET(14, 1);
+		system_adc_read_fast(&adcValue,1,8);
+		GPIO_OUTPUT_SET(14, 0);
+		if (display_now & (200 <= cycle_count++))
+		{
+			DISPLAY_MENU_W_ADC();
+			cycle_count=0;
+		}
+//		wifi_set_opmode_current(wifi_opmode);
+//	}
+}
+void ICACHE_FLASH_ATTR
+init_adc_timer(void)
+{
+	display_now=true;
+	os_timer_setfn(&tadc,&adc_read,NULL);
+	os_timer_arm(&tadc,5,1); // repeat approximately every 100 mS
+}
