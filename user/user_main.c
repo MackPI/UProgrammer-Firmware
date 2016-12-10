@@ -66,7 +66,7 @@ void user_init(void)
 	//TODO writeRam is test code. Clean it up.
 	writeRam();
 	serialInit();
-//	wifi_set_opmode_current(STATION_MODE);
+	wifi_set_opmode_current(NULL_MODE);
 	init_adc_timer();
 	configSigmaDelta();
 

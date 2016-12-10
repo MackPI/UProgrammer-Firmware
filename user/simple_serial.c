@@ -234,6 +234,16 @@ void receiveNext(char recvd)
 //		DISPLAY_MENU_W_ADC();
 		DISPLAY_MENU();
 		break;
+	case 'M': //Increase Vpp Target Voltage
+	case 'm':
+		set_target_voltage(get_target_voltage()+1);
+		menuState = IDLE;
+		break;
+	case 'N': //Decrease Vpp Target Voltage
+	case 'n':
+		set_target_voltage(get_target_voltage()-1);
+		menuState = IDLE;
+		break;
 	default:
 		DISPLAY_MENU();
 		break;

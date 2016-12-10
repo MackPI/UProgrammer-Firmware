@@ -10,7 +10,19 @@
 #include "osapi.h"
 #include "simple_serial.h"
 
+static char target_voltage=100; // divide by 10 for target voltage
+
 extern char connection_status[64];
+char ICACHE_FLASH_ATTR
+get_target_voltage(){
+	return target_voltage;
+}
+
+void ICACHE_FLASH_ATTR
+set_target_voltage(char voltage){
+	target_voltage=voltage;
+}
+
 //TODO clean up this code for readability
 void // ICACHE_FLASH_ATTR ///////
 taskHandler(os_event_t *events)
@@ -42,7 +54,8 @@ taskHandler(os_event_t *events)
 //			int adc_result = system_adc_read();
 			int adc_result = adcValue;
 			int scaled_result = (210*adc_result)/1023;
-			os_sprintf(outBuf, "ADC = %03X (%d.%d Volts)", adc_result, scaled_result/10, scaled_result%10);
+			os_sprintf(outBuf, "target = %d.%d ADC = %03X (%d.%d Volts)",target_voltage/10,
+					target_voltage %10, adc_result, scaled_result/10, scaled_result%10);
 			uart0SendStr(outBuf);
 		}
 		if (events->par == 2)
@@ -90,7 +103,12 @@ void adc_read(void)
 //		wifi_set_opmode_current(NULL_MODE);
 		GPIO_OUTPUT_SET(14, 1);
 		system_adc_read_fast(&adcValue,1,8);
-		GPIO_OUTPUT_SET(14, 0);
+		GPIO_OUTPUT_SET(14, 0);// this is for measuring delay to read
+		if(((210*(uint32)adcValue)/1023) <target_voltage){
+			setSigmaDeltaDuty(getSigmaDeltaDuty()+1);
+		} else {
+			setSigmaDeltaDuty(getSigmaDeltaDuty()-1);
+		}
 		if (display_now & (200 <= cycle_count++))
 		{
 			DISPLAY_MENU_W_ADC();
